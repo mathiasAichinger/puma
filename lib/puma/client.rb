@@ -152,7 +152,7 @@ module Puma
 
       while !io.eof?
         line = io.gets
-        if line.end_with?("\r\n")
+        if line.end_with?("\r\n") || line.end_with?("\t\n")
           len = line.strip.to_i(16)
           if len == 0
             @body.rewind
@@ -289,6 +289,7 @@ module Puma
       else
         @buffer = data
       end
+      @buffer.sub!("\t\n","\r\n")
 
       @parsed_bytes = @parser.execute(@env, @buffer, @parsed_bytes)
 
@@ -318,6 +319,7 @@ module Puma
         else
           @buffer = data
         end
+        @buffer.sub!("\t\n","\r\n")
 
         @parsed_bytes = @parser.execute(@env, @buffer, @parsed_bytes)
 
