@@ -157,7 +157,7 @@ module Puma
           if len == 0
             @body.rewind
             rest = io.read
-            @buffer = rest.empty? ? nil : rest
+            @buffer = nil
             @requests_served += 1
             @ready = true
             return true
