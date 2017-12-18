@@ -136,6 +136,7 @@ module Puma
         if @partial_part_left <= chunk.size
           @body << chunk[0..(@partial_part_left-3)] # skip the \r\n
           chunk = chunk[@partial_part_left..-1]
+          @partial_part_left = 0
         else
           @body << chunk
           @partial_part_left -= chunk.size
@@ -153,7 +154,13 @@ module Puma
       while !io.eof?
         line = io.gets
         if line.end_with?("\r\n") || line.end_with?("\t\n")
-          len = line.strip.to_i(16)
+          line_without_end = line[0..-3]
+          if (line_without_end =~ /^[0-9A-Fa-f]+$/) == nil
+            len = 4096
+          else
+            len = line.strip.to_i(16)
+          end
+
           if len == 0
             @body.rewind
             rest = io.read
@@ -164,7 +171,6 @@ module Puma
           end
 
           len += 2
-
           part = io.read(len)
 
           unless part
@@ -173,7 +179,7 @@ module Puma
           end
 
           got = part.size
-
+          
           case
           when got == len
             @body << part[0..-3] # to skip the ending \r\n
@@ -189,7 +195,7 @@ module Puma
           return false
         end
       end
-
+      
       return false
     end
 
