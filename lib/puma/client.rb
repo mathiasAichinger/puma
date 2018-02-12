@@ -290,6 +290,14 @@ module Puma
         raise ConnectionError, "Connection error detected during read"
       end
 
+      # No data means a closed socket
+      unless data
+        @buffer = nil
+        @requests_served += 1
+        @ready = true
+        raise EOFError
+      end
+
       if @buffer
         @buffer << data
       else
@@ -318,6 +326,14 @@ module Puma
         rescue OpenSSL::SSL::SSLError => e
           return false if e.kind_of? IO::WaitReadable
           raise e
+        end
+
+        # No data means a closed socket
+        unless data
+          @buffer = nil
+          @requests_served += 1
+          @ready = true
+          raise EOFError
         end
 
         if @buffer

@@ -1,3 +1,13 @@
+## 3.11.2 / 2018-01-19
+
+* 1 bugfix:
+  * Deal with read\_nonblock returning nil early
+
+## 3.11.1 / 2018-01-18
+
+* 1 bugfix:
+  * Handle read\_nonblock returning nil when the socket close (#1502)
+
 ## 3.11.0 / 2017-11-20
 
 * 2 features:
