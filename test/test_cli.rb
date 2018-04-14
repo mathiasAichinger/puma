@@ -57,6 +57,7 @@ class TestCLI < Minitest::Test
     s << "GET /stats HTTP/1.0\r\n\r\n"
     body = s.read
     assert_equal '{ "backlog": 0, "running": 0 }', body.split(/\r?\n/).last
+    assert_equal '{ "backlog": 0, "running": 0 }', Puma.stats
 
     cli.launcher.stop
     t.join
@@ -240,12 +241,12 @@ class TestCLI < Minitest::Test
   end
 
   def test_load_path
-    cli = Puma::CLI.new ["--include", 'foo/bar']
+    Puma::CLI.new ["--include", 'foo/bar']
 
     assert_equal 'foo/bar', $LOAD_PATH[0]
     $LOAD_PATH.shift
 
-    cli = Puma::CLI.new ["--include", 'foo/bar:baz/qux']
+    Puma::CLI.new ["--include", 'foo/bar:baz/qux']
 
     assert_equal 'foo/bar', $LOAD_PATH[0]
     $LOAD_PATH.shift

@@ -220,7 +220,11 @@ module Puma
                   # nothing
                 rescue Errno::ECONNABORTED
                   # client closed the socket even before accept
-                  io.close rescue nil
+                  begin
+                    io.close
+                  rescue
+                    Thread.current.purge_interrupt_queue if Thread.current.respond_to? :purge_interrupt_queue
+                  end
                 end
               end
             end
@@ -295,7 +299,7 @@ module Puma
           client.close
 
           @events.parse_error self, client.env, e
-        rescue ConnectionError
+        rescue ConnectionError, EOFError
           client.close
         else
           if process_now
@@ -372,7 +376,11 @@ module Puma
                   # nothing
                 rescue Errno::ECONNABORTED
                   # client closed the socket even before accept
-                  io.close rescue nil
+                  begin
+                    io.close
+                  rescue
+                    Thread.current.purge_interrupt_queue if Thread.current.respond_to? :purge_interrupt_queue
+                  end
                 end
               end
             end
@@ -606,7 +614,7 @@ module Puma
                 fast_write client, "#{k}: #{v}\r\n"
               end
             else
-              fast_write client, "#{k}: #{v}\r\n"
+              fast_write client, "#{k}: #{vs}\r\n"
             end
           end
 
@@ -755,8 +763,8 @@ module Puma
 
         begin
           res_body.each do |part|
+            next if part.bytesize.zero?
             if chunked
-              next if part.bytesize.zero?
               fast_write client, part.bytesize.to_s(16)
               fast_write client, line_ending
               fast_write client, part

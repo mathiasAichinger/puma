@@ -1,3 +1,22 @@
+## 3.11.4 / 2018-04-12
+
+* 2 features:
+  * Manage puma as a service using rc.d (#1529)
+  * Server stats are now available from a top level method (#1532)
+* 5 bugfixes:
+  * Fix parsing CLI options (#1482)
+  * Order of stderr and stdout is made before redirecting to a log file (#1511)
+  * Init.d fix of `ps -p` to check if pid exists (#1545)
+  * Early hints bugfix (#1550)
+  * Purge interrupt queue when closing socket fails (#1553)
+
+## 3.11.3 / 2018-03-05
+
+* 3 bugfixes:
+  * Add closed? to MiniSSL::Socket for use in reactor (#1510)
+  * Handle EOFError at the toplevel of the server threads (#1524) (#1507)
+  * Deal with zero sized bodies when using SSL (#1483)
+
 ## 3.11.2 / 2018-01-19
 
 * 1 bugfix:
